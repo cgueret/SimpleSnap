@@ -5,3 +5,5 @@ http://wiki.pitivi.org/wiki/PyGST_Tutorial/Getting_Started
 
 gst-launch-1.0 v4l2src ! aasink sync=false
 
+https://lazka.github.io/pgi-docs/Gst-1.0/structs/Caps.html
+https://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-bad-libs/html/index.html
