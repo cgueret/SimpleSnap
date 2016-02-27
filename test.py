@@ -16,9 +16,13 @@ class GTK_Main(object):
         gtksink.set_property("sync", False)
         
         # -> Camerabin
+        # TODO look at using http://www.oz9aec.net/index.php/gstreamer/487-using-the-logitech-c920-webcam-with-gstreamer-12
         source = Gst.ElementFactory.make("camerabin", "webcam")
         source.set_property('viewfinder-sink', gtksink)
         source.set_property('mute', True)
+        caps =  Gst.Caps.from_string('image/png,width=1920,height=1080')
+        print(caps.to_string())
+        #source.set_property('image-capture-caps', caps)
         
         # -> prepare the pipeline        
         self.player = Gst.Pipeline.new("player")
@@ -50,10 +54,12 @@ class GTK_Main(object):
     def on_click(self, button):
         print ("Hello")
         camera = self.player.get_by_name('webcam')
+        camera.set_property('location', 'capture.jpg')
         camera.emit('start-capture')
-        a = camera.get_property('image-capture-caps')
-        print (a.to_string())
-        caps =  Gst.Caps.from_string('image/png,width=1920,height=1080')
+        a = camera.get_property('image-capture-supported-caps')
+        aa = a.to_string().split(';')
+        for a in aa:
+            print (a)
         
 
 GObject.threads_init()
