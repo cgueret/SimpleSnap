@@ -1,14 +1,21 @@
 #!/usr/bin/env python
 import gi
+from time import sleep
 gi.require_version('Gtk', '3.0')
 gi.require_version('Gst', '1.0')
 gi.require_version('GdkX11', '3.0')
 gi.require_version('GstVideo', '1.0')
 from gi.repository import Gst, GObject, Gtk, GdkX11, GstVideo
-from gi.repository import GdkPixbuf 
+from gi.repository import GdkPixbuf
 
 class GTK_Main(object):
     def __init__(self):
+        # Prepare the Gstreamer elements
+        pipeline = "uvch264src device=/dev/video1 mode=1 name=src src.vfsrc "
+        pipeline += "! video/x-raw,width=320,height=240,framerate=30/1 "
+        pipeline += "! gtksink sync=false name=gtk"
+        self.player = Gst.parse_launch(pipeline)
+        
         # Prepare the main window
         window = Gtk.Window(Gtk.WindowType.TOPLEVEL)
         window.set_position(Gtk.WindowPosition.CENTER)
@@ -18,20 +25,13 @@ class GTK_Main(object):
         vbox = Gtk.VBox()
         window.add(vbox)
         hbox = Gtk.HBox()
-        self.movie_window = Gtk.DrawingArea()
-        vbox.add(self.movie_window)
+        vbox.add(self.player.get_by_name('gtk').get_property('widget'))
         vbox.pack_start(hbox, False, False, 0)
         button = Gtk.Button("Click")
         button.connect("clicked", self.on_click)
         hbox.pack_start(button, True, True, 0)
         window.show_all()
                 
-        # Prepare the Gstreamer elements
-        pipeline = "uvch264src device=/dev/video1 name=src auto-start=true src.vfsrc"
-        pipeline += "! video/x-raw,format=(string)YUY2,width=320,height=240,framerate=30/1 !"
-        pipeline += "xvimagesink sync=false"
-        self.player = Gst.parse_launch(pipeline)
-        
         # -> Listen to the bus
         bus = self.player.get_bus()
         bus.add_signal_watch()
@@ -41,13 +41,28 @@ class GTK_Main(object):
 
         self.player.set_state(Gst.State.PLAYING)        
 
-    def on_click(self, button):
-        print ("Hello")
         camera = self.player.get_by_name('src')
-        camera.set_property('mode', Gst.CameraBin.Mode.MODE_IMAGE)
+        m = camera.get_property('mode')
+        print (m)
+        modes=type(m)
+        still = modes(1)
+        print (still)
+        camera.set_property('mode', still)
+        
+    def on_click(self, button):
+        print ("Click !")
+        camera = self.player.get_by_name('src')
+        m = camera.get_property('mode')
+        modes=type(m)
+        still = modes(1)
+        camera.set_property('mode', still)
+        #camera.set_property('mode', GstCameraBin2Mode.Image)
+        print (camera.get_property('mode'))
         print (camera.get_property('ready-for-capture'))
         camera.emit('start-capture')
-
+        sleep(3)
+        camera.emit('stop-capture')
+        
     def on_message(self, bus, message):
         if message.type == Gst.MessageType.WARNING:
             err, debug = message.parse_warning()
