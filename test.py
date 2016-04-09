@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 import gi
-from time import sleep
 gi.require_version('Gtk', '3.0')
 gi.require_version('Gst', '1.0')
 gi.require_version('GdkX11', '3.0')
@@ -10,6 +9,18 @@ from gi.repository import GdkPixbuf
 
 class GTK_Main(object):
     def __init__(self):
+        webcam = Gst.ElementFactory.make("v4l2src", "webcam")
+        
+        wrapper = Gst.ElementFactory.make("wrappercamerabinsrc", "wrapper")
+        wrapper.set_property('video-source', webcam)
+        camerabin = Gst.ElementFactory.make("camerabin", "camerabin")
+        camerabin.set_property('camera-source', wrapper)
+        self.player = Gst.Pipeline.new("player")
+        self.player.add(camerabin)
+        self.player.set_state(Gst.State.PLAYING)        
+        a = camerabin.get_property('image-capture-supported-caps').to_string().split(';')
+        print (a)
+        
         # Prepare the Gstreamer elements
         pipeline = "uvch264src device=/dev/video1 mode=1 name=src src.vfsrc "
         pipeline += "! video/x-raw,width=320,height=240,framerate=30/1 "
@@ -60,8 +71,6 @@ class GTK_Main(object):
         print (camera.get_property('mode'))
         print (camera.get_property('ready-for-capture'))
         camera.emit('start-capture')
-        sleep(3)
-        camera.emit('stop-capture')
         
     def on_message(self, bus, message):
         if message.type == Gst.MessageType.WARNING:
