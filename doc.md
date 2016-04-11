@@ -20,4 +20,4 @@ pipeline = "v4l2src device=/dev/video1 ! queue ! video/x-h264,width=1920,height=
 
         
 gst-launch-1.0 -v -e v4l2src device=/dev/video1 ! queue ! video/x-h264,width=1280,height=720,framerate=5/1 ! h264parse ! avdec_h264 ! tee name=t ! queue ! autovideoconvert ! gtksink t. ! queue ! autovideoconvert ! gdkpixbufsink sync=false
-        
+        gst-launch-1.0 -v -e v4l2src device=/dev/video1 ! queue ! video/x-h264,width=1920,height=1080,framerate=30/1 ! h264parse ! avdec_h264 ! tee name=t ! queue ! autovideoconvert ! videoscale ! video/x-raw,width=640,height=480 ! ximagesink t. ! queue ! autovideoconvert ! gdkpixbufsink sync=false
