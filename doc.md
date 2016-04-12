@@ -2,6 +2,10 @@ http://brettviren.github.io/pygst-tutorial-org/pygst-tutorial.pdf
 http://wiki.oz9aec.net/index.php/Gstreamer_cheat_sheet#Text_Overlay
 http://stackoverflow.com/questions/3139747/python-gstreamer-webcam-viewer
 http://wiki.pitivi.org/wiki/PyGST_Tutorial/Getting_Started
+https://wiki.matthiasbock.net/index.php/Hardware-accelerated_video_playback_on_the_Raspberry_Pi
+https://lubosz.wordpress.com/2014/05/27/gstreamer-overlay-opengl-sink-example-in-python-3/
+
+https://lazka.github.io/pgi-docs/
 
 gst-launch-1.0 v4l2src ! aasink sync=false
 
