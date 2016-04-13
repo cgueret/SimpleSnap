@@ -8,6 +8,7 @@
 ```
 
 A very basic photo booth software using Gstreamer and GTK
+
 Logo by http://www.figlet.org/
 
 # Installation
