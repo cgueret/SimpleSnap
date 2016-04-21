@@ -72,22 +72,22 @@ class GTK_Main(object):
             GLib.timeout_add_seconds(0, self.count_down, 3)
         
     def count_down(self, value):
-        print (value)
-
         # If there are more seconds, continue the count down     
         if value > 0:
+            print (value)
             self.camera.show_count_down(value)
             GLib.timeout_add_seconds(1, self.count_down, value - 1)
         # If the count down is finished save the photo and pause
         elif value == 0:
             print ('Click !')
-            self.camera.hide_count_down()
+            self.camera.show_count_down('Click !')
             self.camera.take_photo()
             self.camera.pause()
             GLib.timeout_add_seconds(1, self.count_down, value - 1)
         # That's the post-pause count, resume the pipeline
         elif value < 0:
             self.capturing = False
+            self.camera.hide_count_down()
             self.camera.start()
         
     def on_quit(self, button):
