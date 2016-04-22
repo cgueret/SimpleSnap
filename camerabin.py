@@ -17,7 +17,8 @@ def stop(binn):
     Gtk.main_quit ()
 
 def message(bus, message):
-    print ("{} {}".format(message.type, message.get_structure().get_name()))
+    if message.type != Gst.MessageType.STATE_CHANGED and message.type != Gst.MessageType.STREAM_STATUS:
+        print ("{} {}".format(message.type, message.get_structure().get_name()))
     
 Gst.init([])
 Gtk.init([])
@@ -26,14 +27,19 @@ vf_caps = Gst.Caps.from_string('video/x-raw, width=160, height=120, framerate=24
 #photo_caps = Gst.Caps.from_string('video/x-raw, width=1920, height=1080')
 photo_caps = Gst.Caps.from_string('video/x-raw, width=2304, height=1536')
 
-camerabin = Gst.ElementFactory.make("camerabin")
 webcam = Gst.ElementFactory.make('v4l2src')
-device = '/dev/video1' if os.path.exists('/dev/video1') else '/dev/video0'
+device = '/dev/video2' if os.path.exists('/dev/video2') else '/dev/video0'
 webcam.set_property('device', device)
 wrappercamerabinsrc = Gst.ElementFactory.make('wrappercamerabinsrc')
 wrappercamerabinsrc.set_property('video-source', webcam)
+
+vf_sink = Gst.ElementFactory.make('ximagesink')
+vf_sink.set_property('sync', False)
+
+camerabin = Gst.ElementFactory.make("camerabin")
 camerabin.set_property('mute', True)
 camerabin.set_property('camera-source', wrappercamerabinsrc)
+camerabin.set_property('viewfinder-sink', vf_sink)
 camerabin.set_property('viewfinder-caps', vf_caps)
 camerabin.set_property('image-capture-caps', photo_caps)
 
