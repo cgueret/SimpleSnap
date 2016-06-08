@@ -18,11 +18,8 @@ def window_closed (widget, event, camera):
 class GTK_Main(object):
     def __init__(self):
         # Create the camera
-        print ('create camera')
+        print ('Create camera')
         self.camera = Camera()
-        
-        # State variable for saving an image
-        self.capturing = False
         
         # Prepare the main window
         window = Gtk.Window(Gtk.WindowType.TOPLEVEL)
@@ -34,19 +31,9 @@ class GTK_Main(object):
         window.connect("key-release-event", self.on_key_released)
         
         
-        # Prepare the notebook
-        notebook = Gtk.Notebook()
-        
         # Make a first tab for the view finder
-        drawing_area = Gtk.DrawingArea()
-        drawing_area.set_double_buffered (True)
-        notebook.append_page(drawing_area, Gtk.Label("live"))
-        
-        # Make a second one to show the last image
-        frame = Gtk.AspectFrame()
-        last_photo = Gtk.Image()
-        frame.add(last_photo)
-        #notebook.append_page(frame, Gtk.Label("last photo"))
+        vf_area = Gtk.DrawingArea()
+        vf_area.set_double_buffered (True)
         
         #vbox = Gtk.VBox()
         #window.add(vbox)
@@ -61,32 +48,28 @@ class GTK_Main(object):
         hbox.pack_start(button, True, True, 0)
         
         # Pack
-        window.add(notebook)
+        window.add(vf_area)
         
         # Show
         window.show_all()
-        #window.fullscreen()
+        window.fullscreen()
         window.realize()
         
-        # Bind the view finder sink to the drawing area and the window to
-        # show the last photo to the GtkImage
-        self.camera.bind_last_photo_to_image(last_photo)
-        self.camera.bind_view_finder_to_widget(drawing_area)
-
+        # Bind the view finder sink to the drawing area
+        self.camera.bind_view_finder_to_widget(vf_area)
+        
         # Start the capture
         self.camera.start()        
-
-        last_photo.set_from_file('./photos/2016-05-11 22:56:06.jpg')
         
     def on_take_photo(self, button):
         self.camera.take_photo()
     
     def on_key_released(self, widget, event):
-        print (event.hardware_keycode)
-        if event.hardware_keycode == 123:
+        #print (event.hardware_keycode)
+        if event.hardware_keycode == 123 or event.hardware_keycode == 36:
             self.camera.take_photo()
-        if event.hardware_keycode == 36:
-            print ('exit')
+        else:
+            self.on_quit(None)
         
     def on_quit(self, button):
         print ("Bye !")
