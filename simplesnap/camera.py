@@ -13,7 +13,6 @@ from gi.repository import Gst
 from gi.repository import GLib
 from gi.repository import GdkX11  # for window.get_xid() @UnusedImport
 from gi.repository import GstVideo  # for sink.set_window_handle() @UnusedImport
-from gi.repository import GstPbutils
 from datetime import datetime
 
 class Camera(object):
@@ -28,9 +27,6 @@ class Camera(object):
         #VF_CAPS = Gst.Caps.from_string('video/x-raw, width=800, height=600, framerate=30/1')
         #photo_caps = Gst.Caps.from_string('video/x-raw, width=1920, height=1080')
         PHOTO_CAPS = Gst.Caps.from_string('video/x-raw, width=2304, height=1536')
-
-        PROFILE = GstPbutils.EncodingVideoProfile.new(Gst.Caps("image/jpeg"), 
-                                                      None, None, 1)
         
         # Create an instance of the webcam
         print ('Create webcam')
@@ -63,7 +59,6 @@ class Camera(object):
         self._camerabin.set_property('viewfinder-filter', vf_overlay)
         self._camerabin.set_property('viewfinder-caps', VF_CAPS)
         self._camerabin.set_property('image-capture-caps', PHOTO_CAPS)
-        #self._camerabin.set_property('image-profile', PROFILE)
         
         # Create bus to get events from GStreamer pipeline
         bus = self._camerabin.get_bus()
